@@ -2,42 +2,31 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View ,Image, Button, ScrollView, TextInput, Pressable } from 'react-native';
 import FirstAccess from './components/FirstAccess'
-import Cameras from './components/Cameras'
-import { Camera } from 'expo-camera';
+import Home from './components/Home'
+import Subscription from './components/Subscription'
 
 export default function App() {
-  const [firstAccess] = useState(true); //uSestate è un hook a cui passo il valore iniziale
+  const [firstAccess, setFirstAccess] = useState(true); //uSestate è un hook a cui passo il valore iniziale
 
-  if(firstAccess === true)
-    return <FirstAccess />
-  else
+  if(firstAccess !== true)
+    return(
+      <View style={styles.container}>
+        <FirstAccess  />
+        <Subscription />
+        <Home />
+      </View>
+    )   
+  else 
     return (
-
-    //return <Cameras />
-
-      <ScrollView>
-        <View style={styles.container}>
-          <Text>Benvenuto, mbare</Text>
-          <TextInput style={styles.textInput} defaultValue="nome" />
-          <TextInput style={styles.textInput} defaultValue="cognome" />
-          
-          <Pressable style={({ pressed }) => [{ backgroundColor: pressed ? 'rgb(210, 230, 255)' : '#6495ED' }, styles.button ]} onPress={() => {return <Cameras />}}>
-            <Text style={styles.text}>Scatta una foto</Text>
-          </Pressable>
-          
-        </View>
-      </ScrollView>
-      
-    );
+    <View>
+      <Home />
+    </View>
+  )
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: 70
+    flex: 1, //invece di height e width
   },
 
   text: {
