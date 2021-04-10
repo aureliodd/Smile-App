@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View ,Image, ScrollView, TextInput, Button, Pressable } from 'react-native';
+import { StyleSheet, Text, View ,Image, TextInput, Pressable } from 'react-native';
 
 
-const Subscription = () => {
+const Subscription = ({navigation}) => {
 
     const [display, setDisplay] = useState(true)
     const [firstName, setFirstName] = useState('')
@@ -15,8 +15,8 @@ const Subscription = () => {
             
             <Pressable style={({ pressed }) => [{ backgroundColor: pressed ? 'blue' : 'red' }, styles.button ]} onPress={() => {
                 if(firstName === '' || secondName === '') return
-                setDisplay(false)}
-            }>
+                navigation.navigate('MainStack')
+            }}>
                 <Text style={styles.text}>Iscriviti e accedi all'app</Text>
             </Pressable>
         </View>

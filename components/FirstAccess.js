@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View ,Image /*ScrollView, TextInput*/, Button } from 'react-native';
+import { StyleSheet, Text, View ,Image, Button } from 'react-native';
 
 
-const FirstAccess = () => {
+const FirstAccess = ({navigation}) => {
 
-    const [display, setDisplay] = useState(true)
 
     const messages = [
         {title: "ciao!", content: "Benvenuto su APPLICAZIONE"},
@@ -13,14 +12,14 @@ const FirstAccess = () => {
     ]
 
     let tabs = []
-    tabs  = Tab(messages, setDisplay)
+    tabs  = Tab(messages, navigation)
 
     return(
-        <View style={(display === true) ? styles.Visible : styles.Hidden}>{tabs}</View>
+        <View>{tabs}</View>
     )
 }
 
-const Tab = (messages, setDisplay) => {
+const Tab = (messages, navigation) => {
 
     const [index, setIndex] = useState(0)
 
@@ -35,7 +34,7 @@ const Tab = (messages, setDisplay) => {
                     if(index <2) 
                         setIndex(index + 1)
                     else
-                        setDisplay(false)
+                        navigation.navigate('Subscription')
                 }} />
             </View>
         </View>
@@ -45,6 +44,8 @@ const Tab = (messages, setDisplay) => {
 export default FirstAccess
 
 const styles = StyleSheet.create({
+
+
     FirstAccess: {
         backgroundColor: "#d7f8ff",
         justifyContent: "center",
