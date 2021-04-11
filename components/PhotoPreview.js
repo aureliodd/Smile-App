@@ -4,18 +4,16 @@ import { StyleSheet, Text, View ,Image, ScrollView, TextInput, Button, Pressable
 
 const PhotoPreview = ({route, navigation}) => {
 
-    console.log(route.params.uri)
+    // console.log(route.params.uri)
 
     return(
         <View style={styles.container}>
             <Image style={styles.image} source={{uri: route.params.uri}}></Image>
             <View style={styles.buttonContainer}>
                 <Button title="Cancella" color="white" onPress={() => navigation.pop() } />
-                <Button title="Usa"  color="white" onPress={() => navigation.pop(2) } />
+                <Button title="Usa"  color="white" onPress={() => navigation.navigate('SecondaryStack', {screen: 'PhotoForm', params: {uri: route.params.uri, date: route.params.date}},) } />
             </View>
         </View>
-
-        
     )
 }
 

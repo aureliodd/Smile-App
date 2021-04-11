@@ -1,6 +1,5 @@
 import React from 'react'
 import { createStackNavigator } from '@react-navigation/stack'
-import  { NavigationContainer } from '@react-navigation/native'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import Home from '../components/Home'
 import Details from '../components/Details'
@@ -22,6 +21,7 @@ const homeStackScreen = () => (
         name="Home"
         component={Home}
         options={{ title: 'Home' }}
+        initialParams={{ user: 'bello' }}
         />
         <homeStack.Screen
         name="Details"
@@ -53,29 +53,28 @@ const MyTheme = {
   };
 
 function MainStack() {
-    //IMPORTANTE: ricordare di Wrappare il Navigator nel NavigationContainer come sotto
     return (
-            <tabs.Navigator screenOptions={({ route }) => ({
-                tabBarIcon: ({ focused, color, size }) => {
-                  let iconName;
-      
-                  if (route.name === 'Home') {
-                    iconName = focused ? 'home' : 'home-outline';
-                  } else if (route.name === 'Settings') {
-                    iconName = focused ? 'settings' : 'settings-outline';
-                  }
-      
-                  // You can return any component that you like here!
-                  return <Ionicons name={iconName} size={size} color={color} />;
-                },
-              })}
-              tabBarOptions={{
-                activeTintColor: 'tomato',
-                inactiveTintColor: 'gray',
-              }}>
-                <tabs.Screen name='Home' component={ homeStackScreen }  />
-                <tabs.Screen name='Settings' component={ settingsStackScreen } />
-            </tabs.Navigator>
+      <tabs.Navigator screenOptions={({ route }) => ({
+          tabBarIcon: ({ focused, color, size }) => {
+            let iconName;
+
+            if (route.name === 'Home') {
+              iconName = focused ? 'home' : 'home-outline';
+            } else if (route.name === 'Settings') {
+              iconName = focused ? 'settings' : 'settings-outline';
+            }
+
+            // You can return any component that you like here!
+            return <Ionicons name={iconName} size={size} color={color} />;
+          },
+        })}
+        tabBarOptions={{
+          activeTintColor: 'tomato',
+          inactiveTintColor: 'gray',
+        }}>
+          <tabs.Screen name='Home' component={ homeStackScreen }  />
+          <tabs.Screen name='Impostazioni' component={ settingsStackScreen } />
+      </tabs.Navigator>
     );
   }
 

@@ -2,19 +2,23 @@ import React, { useState } from 'react';
 import { StyleSheet, Text, View ,Image, TextInput, Pressable } from 'react-native';
 
 
-const Subscription = ({navigation}) => {
+const SubscriptionForm = ({navigation}) => {
 
-    const [display, setDisplay] = useState(true)
     const [firstName, setFirstName] = useState('')
     const [secondName, setSecondName] = useState('')
 
     return(
-        <View style={[styles.container, (display === true) ? styles.Visible : styles.Hidden ]}>
-            <TextInput style={styles.textInput} value={firstName} placeholder="nome" onChangeText={(value) => setFirstName(value)} />
-            <TextInput style={styles.textInput} value={secondName} placeholder="cognome" onChangeText={(value) => setSecondName(value)} />
+        <View style={ styles.container }>
+            <TextInput autoCorrect={ false } style={styles.textInput} value={firstName} placeholder="nome" onChangeText={(value) => setFirstName(value)} />
+            <TextInput autoCorrect={ false } style={styles.textInput} value={secondName} placeholder="cognome" onChangeText={(value) => setSecondName(value)} />
             
-            <Pressable style={({ pressed }) => [{ backgroundColor: pressed ? 'blue' : 'red' }, styles.button ]} onPress={() => {
-                if(firstName === '' || secondName === '') return
+            <Pressable 
+                // disabled={() => {
+                //     if(firstName === '' || secondName === '') return true; else return false}
+                // } 
+                style={({ pressed }) => [{ backgroundColor: pressed ? 'rgb(210, 230, 255)' : '#6495ED' }, styles.button ]} 
+                onPress={() => {
+                    if(firstName === '' || secondName === '') return
                 navigation.navigate('MainStack')
             }}>
                 <Text style={styles.text}>Iscriviti e accedi all'app</Text>
@@ -23,7 +27,7 @@ const Subscription = ({navigation}) => {
     )
 }
 
-export default Subscription
+export default SubscriptionForm
 
 
 const styles = StyleSheet.create({
@@ -38,14 +42,6 @@ const styles = StyleSheet.create({
   
     text: {
       fontSize: 16
-    },
-
-    Visible: {
-        display: 'flex'
-    },
-
-    Hidden: {
-        display: "none"
     },
   
     button: {

@@ -24,20 +24,22 @@ const CameraModule = ({navigation}) => {
     return <View />;
   }
   if (hasPermission === false) {
-    return <Text>No access to camera</Text>;
+    return <Text>Non è possibile accedere alla camera</Text>;
   }
 
   const takePicture = async () => {
 
     if (camera) {
         const options = {
-          quality: 1
+          quality: 1,
+          fixOrientation: true,
+          forceUpOrientation: true
         };
 
         const photo = await camera.takePictureAsync(options)
-        console.log(photo.uri)
+        //console.log(photo)
 
-        navigation.navigate('PhotoPreview', {uri: photo.uri})
+        navigation.navigate('PhotoPreview', {uri: photo.uri, date: new Date().toISOString()})
     }
   };
 
