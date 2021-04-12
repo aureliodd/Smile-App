@@ -33,7 +33,7 @@ const homeStackScreen = () => (
 
 const settingsStackScreen = () => (
     <settingsStack.Navigator
-        initialRouteName="Home"
+        initialRouteName="Settings"
         screenOptions={{ gestureEnabled: false }}
     >
         <settingsStack.Screen
@@ -60,7 +60,7 @@ function MainStack() {
 
             if (route.name === 'Home') {
               iconName = focused ? 'home' : 'home-outline';
-            } else if (route.name === 'Settings') {
+            } else if (route.name === 'Impostazioni') {
               iconName = focused ? 'settings' : 'settings-outline';
             }
 

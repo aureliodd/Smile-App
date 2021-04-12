@@ -1,40 +1,52 @@
 import { disableExpoCliLogging } from 'expo/build/logs/Logs';
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View ,Image, ScrollView, Button, Pressable, TouchableOpacity, Alert} from 'react-native';
+import { StyleSheet, Text, View ,Image, ScrollView, Pressable, Alert} from 'react-native';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 const Home = ({route, navigation}) => {
 
-  const [firstAccess, setFirstAccess] = useState(true); //useSetate è un hook a cui passo il valore iniziale
+  const [firstAccess, setFirstAccess] = useState(true)
   const [photos, setPhotos] = useState(null)
 
-  const getData = async () => {
+  const getFA = async () => {
     try {
-      const jsonValue = await AsyncStorage.getItem('key')
-      const value = jsonValue != null ? JSON.parse(jsonValue) : null;
-      if(value)
-        setPhotos(value)
+      return await AsyncStorage.getItem('firstAccess')
     } catch(e) {
-      console.log(e)
+      console.log('error: ',e)
       Alert.alert("C'è stato un problema")
     }
   }
 
-  if(firstAccess !== true)
-    useEffect(() =>{
+  const getData = async () => {
+    try {
+      const jsonValue = await AsyncStorage.getItem('photos')
+      const value = jsonValue != null ? JSON.parse(jsonValue) : null;
+      if(value)
+        setPhotos(value)
+    } catch(e) {
+      console.log('error: ',e)
+      Alert.alert("C'è stato un problema")
+    }
+  }
+
+  const displayFirstAccess = async () => {
       navigation.push('Subscription')
       navigation.push('FirstAccess')
-    })
+  }
 
     useEffect(() => {
       const page = navigation.addListener('focus', () => {
         getData()
+        // delData()
       });
       return page
     }, []);
 
+    getFA().then((firstAccess) => {
+      if(!firstAccess) {displayFirstAccess()}
+    })
 
   if(photos === null)
     return(    
@@ -52,7 +64,13 @@ const Home = ({route, navigation}) => {
     // console.log(photos)
     
     for(let i = 0; i<photos.length;i++)
-      tiles.push(new Tile(photos[i], i))
+      tiles.push(new Tile(photos[i], i, navigation))
+
+    tiles.push(
+      <View key={'aux'} style={styles.auxTile}>
+        
+      </View>
+    )
     
     return(
         <View style={styles.container}>
@@ -72,15 +90,17 @@ const Home = ({route, navigation}) => {
 
 export default Home
 
-const Tile = (photo, key) => {
+const Tile = (photo, key, navigation) => {
   // console.log(photo.uri)
   let formattedDate = GetDate(photo.date)
   if(photo !== null)
     return(
-      <View key={key} style={styles.tile}>
-        <Text style={styles.text}>{formattedDate}</Text>
-        <Image style={styles.image} source={{uri: photo.uri}} />
-      </View>
+      <Pressable  key={key} style={({ pressed }) => [{ backgroundColor: pressed ? '#d9f7f7' : '#add8e6' }, styles.tile ]} onPress={() => {
+        navigation.push('Details', photo)
+      }}>
+        <Text style={styles.textTile}>{formattedDate}</Text>
+        <Image resizeMode='cover' style={styles.image} source={{uri: photo.uri}} />
+      </Pressable>
     )
 
     return(<View key={key}></View>)
@@ -93,8 +113,8 @@ const GetDate = (dateTime) => {
   let splitDateTime = dateTime.split('T')
   
   //se la foto è stata scattata oggi, ritorno l'ora
-  if(splitDateTime[0] = currentDate.split('T')[0])
-    return(splitDateTime[1].slice(0,5))
+  if(splitDateTime[0] === currentDate.split('T')[0])
+    return("Oggi, " + splitDateTime[1].slice(0,5))
 
   let date = splitDateTime[0].split('-').reverse().join('.')
   return date
@@ -115,15 +135,30 @@ const styles = StyleSheet.create({
     },
 
     contentContainer: {
-      padding: 0
+      // width: '100%',
+      alignItems: 'center',
+      // height: '100%'
     },
 
     tile: {
-      backgroundColor: 'yellow',
-      borderRadius: 10,
-      aspectRatio: 5/3,
+      // backgroundColor: '#add8e6',
       margin: 5,
-      padding: 5
+      width:'97%',
+      padding: 7,
+      alignItems:'center',
+      borderRadius: 8
+    },
+
+    textTile:{
+      alignSelf: 'flex-end',
+      marginRight:10,
+      marginBottom: 5,
+      marginTop: 5
+    },
+
+    auxTile: {
+      width:'100%',
+        height: 100
     },
   
     text: {
@@ -133,7 +168,7 @@ const styles = StyleSheet.create({
 
     image: {
       width:'100%',
-      height: '90%',
+      height: 150,
       borderRadius: 8,
       margin: 2
     },
@@ -144,15 +179,16 @@ const styles = StyleSheet.create({
         paddingBottom: 5,
         padding: 2,
         backgroundColor: 'rgba(255, 255, 255, 0.9)',
-        position:'absolute', bottom:0
+        position:'absolute', 
+        bottom:0,
+        maxHeight:100
     },
   
     bottomButton: {
       textAlign:'center',
       alignItems: 'center',
       padding: 14,
-      borderRadius: 8,
-      
+      borderRadius: 8
     },
 
     Visible:{

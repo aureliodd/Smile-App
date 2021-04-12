@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View ,Image, ScrollView, Button, Pressable, TouchableOpacity} from 'react-native';
+import { StyleSheet, Text, View ,Image, ScrollView, TextInput, Pressable, Alert, StatusBar, Switch} from 'react-native';
 import { PostData } from '../network/Http';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -7,52 +7,66 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const PhotoForm = ({route, navigation}) => {
 
+  const [isEnabled, setIsEnabled] = useState(false);
+  const [moreInfo, setMoreInfo] = useState('');
 
     return(
       <View style={styles.container}>
-
+      <StatusBar hidden={false}></StatusBar>
       <ScrollView contentContainerStyle={styles.contentContainer} >
+        
+          <Image resizeMode='cover' style={styles.image} source={{uri: route.params.uri}} />
+
         <View style={styles.tile}>
-          <Image style={styles.image} source={{uri: route.params.uri}}></Image>
-        </View>
-        <View style={styles.tile}>
-          <Text>ciao</Text>
+          <View style={styles.modal}>
+            <Text style={styles.text}>Invia al centro medico</Text>
+            <Switch
+              trackColor={{ false: "#767577", true: "#32CD32" }}
+              ios_backgroundColor="#3e3e3e"
+              onValueChange={() => setIsEnabled(previousState => !previousState)}
+              value={isEnabled}
+            />
+          </View>
+          
+          <TextInput
+            style={[styles.infoInput, {display: (isEnabled) ? 'flex' : 'none'}]} 
+            multiline 
+            numberOfLines={4} 
+            placeholder='Entra informazioni utili'
+            value={moreInfo}
+            onChangeText={(value) => {setMoreInfo(value); console.log(moreInfo);}}
+          />
         </View>
       </ScrollView>
 
       <View style={styles.bottomButtonView}>
           <Pressable style={({ pressed }) => [{ backgroundColor: pressed ? 'rgb(210, 230, 255)' : '#6495ED' }, styles.bottomButton ]} onPress={() => {
-            PostData(route.params.uri)
+            
+            if(isEnabled)
+              PostData(route.params, moreInfo)
 
-            setObjectValue = async () => {
+            setPhotos = async () => {
               try {
-                // const jsonValue = JSON.stringify(route.params)
-                // await AsyncStorage.mergeItem('key', jsonValue)
+                let aux = []
 
-                let value = []
-
-                const jsonGet = await AsyncStorage.getItem('key')
+                const jsonGet = await AsyncStorage.getItem('photos')
                 if(jsonGet !== null)
-                  value = JSON.parse(jsonGet)
+                  aux = JSON.parse(jsonGet)
                 
-                
-                value.push(route.params)
+                aux.push(route.params)
 
-                console.log(value)
-
-                const jsonValue = JSON.stringify(value)
-                await AsyncStorage.setItem('key', jsonValue)
-
+                const jsonValue = JSON.stringify(aux)
+                await AsyncStorage.setItem('photos', jsonValue)
 
               } catch(e) {
+                Alert.alert("C'è stato un problema")
                 console.log('errore')
               }
-              console.log('Done.')
             }
 
-          setObjectValue()
+            setPhotos()
           
-            navigation.navigate('Home')
+            navigation.navigate('Details', route.params)
           }}>
               <Text style={styles.text}>Analizza</Text>
           </Pressable>
@@ -70,12 +84,34 @@ const styles = StyleSheet.create({
   },
 
   contentContainer: {
+    alignItems: 'center',
     padding: 5
   },
 
   tile: {
-    borderRadius: 10,
-    aspectRatio: 5/3,      
+    padding: 15,
+    top: 10,
+    width:'100%',
+    borderRadius: 8,
+    aspectRatio: 5/3,
+  },
+
+  infoInput: {
+    top: 15,
+    width:'100%',
+    height: 100,
+    maxHeight: 100,
+    borderColor:'black',
+    borderWidth: 1,
+    borderRadius: 8,
+    padding: 8
+  },
+
+  modal:{
+    display:'flex',
+    flexDirection:'row',
+    justifyContent:'space-between',
+    width: '100%'
   },
 
   text: {
@@ -100,7 +136,8 @@ const styles = StyleSheet.create({
   },
 
   image: {
-    width: '50%',
-    aspectRatio: 3/4
+    width: '100%',
+    borderRadius:8,
+    aspectRatio: 5/3
 },
 });

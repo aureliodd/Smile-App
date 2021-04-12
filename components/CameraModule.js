@@ -1,15 +1,15 @@
 import { disableExpoCliLogging } from 'expo/build/logs/Logs';
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View ,Image, ScrollView, TextInput, Button, Pressable, TouchableOpacity} from 'react-native';
+import { StyleSheet, Text, View ,Image, ScrollView, TextInput, Button, Pressable, TouchableOpacity, StatusBar} from 'react-native';
 import { Camera } from 'expo-camera';
 
 import Ionicons from '@expo/vector-icons/Ionicons'
 
 const CameraModule = ({navigation}) => {
-    const [hasPermission, setHasPermission] = useState(null);
-    const [type, setType] = useState(Camera.Constants.Type.back);
-
-    const [image, setImage] = useState(null)
+    const [hasPermission, setHasPermission] = useState(null)
+    const [type, setType] = useState(Camera.Constants.Type.back)
+    const [flashMode, setFlashMode] = React.useState('off')
+    const [flashIcon, setFLashIcon] = React.useState('flash-off-outline')
 
     let camera
 
@@ -41,17 +41,33 @@ const CameraModule = ({navigation}) => {
 
         navigation.navigate('PhotoPreview', {uri: photo.uri, date: new Date().toISOString()})
     }
-  };
+  }
+
+  const handleFlash = () => {
+    if (flashMode === 'on'){
+      setFlashMode('auto')
+      setFLashIcon('flash')
+    }
+    else if (flashMode === 'off'){
+      setFlashMode('on')
+      setFLashIcon('flash-outline')
+    }
+    else{
+      setFlashMode('off')
+      setFLashIcon('flash-off-outline')
+    }
+  }
 
   return (
     <View style={styles.container}>
-      <Camera style={styles.camera} type={type} ref={ref => {camera = ref}}>{/*NOTA: ref è importantissimo per far funzionare takePicture*/}
+      <StatusBar hidden={true} />
+      <Camera style={styles.camera} type={type} flashMode={flashMode} ref={ref => {camera = ref}}>{/*NOTA: ref è importantissimo per far funzionare takePicture*/}
         <View style={styles.buttonTopContainer}>
         <TouchableOpacity
             style={styles.button}
-            onPress={() => {}
-        }>
-            <Ionicons name='flash-outline' size={32} color='white' />
+            onPress={ handleFlash }
+        >
+            <Ionicons name={ flashIcon } size={32} color='white' />
           </TouchableOpacity>
         <TouchableOpacity
             style={styles.button}
