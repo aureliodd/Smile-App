@@ -1,6 +1,31 @@
 import { disableExpoCliLogging } from 'expo/build/logs/Logs';
-import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View ,Image, ScrollView, Pressable} from 'react-native';
+import React from 'react';
+import { StyleSheet, Text, View ,Image, ScrollView, Pressable, Alert, DevSettings, SliderComponent} from 'react-native';
+
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+const delPhoto = async (uri) => {
+  try {
+    const jsonValue = await AsyncStorage.getItem('photos')
+    const value = JSON.parse(jsonValue)
+
+
+    let indexToRemove = value.indexOf(value.find((element) => {
+      return (element.uri === uri)
+    }))
+
+    value.splice(indexToRemove, 1) //1 è il numero di elementi da rimuovere a partire da indexToRemove
+
+    if(value.length === 0)
+      await AsyncStorage.removeItem('photos')
+    else
+      await AsyncStorage.setItem('photos', JSON.stringify(value))
+
+    } catch(e) {
+    console.log('error: ',e)
+    Alert.alert("C'è stato un problema")
+  }
+}
 
 
 const Details = ({route, navigation}) => {
@@ -14,7 +39,10 @@ const Details = ({route, navigation}) => {
                         <Text style={styles.textTitle}>Dettagli aggiuntivi: </Text><Text> - </Text>
                         <Text style={styles.textTitle}>Esito: </Text><Text> - </Text>
                     </View>
-                    <Pressable style={({ pressed }) => [{ backgroundColor: pressed ? 'pink' : 'red' }, styles.bottomButton ]} onPress={() => {}}>
+                    <Pressable style={({ pressed }) => [{ backgroundColor: pressed ? 'pink' : 'red' }, styles.bottomButton ]} onPress={ async () => {
+                      await delPhoto(route.params.uri)
+                      navigation.navigate('Home')
+                    }}>
                         <Text style={styles.text}>Elimina</Text>
                     </Pressable>
                 </View>

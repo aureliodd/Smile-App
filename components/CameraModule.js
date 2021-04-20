@@ -1,8 +1,9 @@
 import { disableExpoCliLogging } from 'expo/build/logs/Logs';
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View ,Image, ScrollView, TextInput, Button, Pressable, TouchableOpacity, StatusBar} from 'react-native';
+import { StyleSheet, Text, View , Alert, TouchableOpacity, StatusBar} from 'react-native';
 import { Camera } from 'expo-camera';
 
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import Ionicons from '@expo/vector-icons/Ionicons'
 
 const CameraModule = ({navigation}) => {
@@ -57,6 +58,31 @@ const CameraModule = ({navigation}) => {
       setFLashIcon('flash-off-outline')
     }
   }
+
+  const checkCameraFirstAccess = async () => {
+    try {
+      const firstAccessPhoto = await AsyncStorage.getItem('firstAccessPhoto')
+      if(firstAccessPhoto == 'true')
+        Alert.alert(
+          "Nota",
+          "Assicurarsi che la foto sia scattata nelle migliori condizioni possibili ",
+          [
+            {
+              text: "Ho capito",
+              onPress: () => AsyncStorage.setItem('firstAccessPhoto','false'),
+              style: "cancel"
+            }
+          ]
+        )
+    } catch(e) {
+      console.log('error: ',e)
+      Alert.alert("C'è stato un problema")
+    }
+  }
+
+  checkCameraFirstAccess()
+
+  
 
   return (
     <View style={styles.container}>

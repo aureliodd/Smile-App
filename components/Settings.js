@@ -1,32 +1,16 @@
 import { disableExpoCliLogging } from 'expo/build/logs/Logs';
-import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View ,Image, ScrollView, TextInput, Button, Pressable, Alert} from 'react-native';
+import React from 'react';
+import { StyleSheet, Text, View , ScrollView, Pressable, Alert, DevSettings} from 'react-native';
+import * as Linking from 'expo-linking'
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const Settings = () => {
-    
-    return(
-        <View style={styles.container}>
-            <ScrollView>
-
-            <SettingTiles/>
-
-            <View style={styles.version}><Text>Versione 0.0.1</Text></View>
-
-            </ScrollView>
-        
-        </View>
-    )
-}
-
-export default Settings
-
-const SettingTiles = () => {
+const Settings = ({navigation}) => {
 
     const delPhotos = async () => {
         try {
           await AsyncStorage.removeItem('photos')
+          DevSettings.reload()
         } catch(e) {
           console.log('error: ',e)
           Alert.alert("C'è stato un problema")
@@ -38,24 +22,45 @@ const SettingTiles = () => {
           await AsyncStorage.removeItem('firstName')
           await AsyncStorage.removeItem('secondName')
           await AsyncStorage.removeItem('firstAccess')
+          await AsyncStorage.removeItem('firstAccessPhoto')
+          await AsyncStorage.removeItem('photos')
+          DevSettings.reload()
         } catch(e) {
           console.log('error: ',e)
           Alert.alert("C'è stato un problema")
         }
       }
-
+    
     return(
-        <View>
+        <View style={styles.container}>
+            <ScrollView>
+            <View>
             <View style={styles.separator}></View>
 
-            <View style={styles.settingTile}><Text>Dati Personali</Text></View>
-            <View style={styles.settingTile}><Text>Info</Text></View>
-            <View style={styles.settingTile}><Text>Segnala un problema</Text></View>
+            <Pressable style={({ pressed }) => [{ backgroundColor: pressed ? 'gray' : 'white' }, styles.settingTile ]} onPress={() => { navigation.push('ChangeName') }}>
+                <Text>Dati personali</Text>
+            </Pressable>
+            <Pressable style={({ pressed }) => [{ backgroundColor: pressed ? 'gray' : 'white' }, styles.settingTile ]} onPress ={() => { navigation.push('Info') }}>
+                <Text>Info</Text>
+            </Pressable>
+            <Pressable style={[{ backgroundColor: 'white' }, styles.settingTile]} onPress={() => Linking.openURL('mailto:a.durso@studium.unict.it')}>
+                <Text>Segnala un problema</Text>
+            </Pressable>
 
             <View style={styles.separator}></View>
 
             <Pressable style={({ pressed }) => [{ backgroundColor: pressed ? 'gray' : 'white' }, styles.settingTile ]} onPress={() => {
-                delPhotos()
+                Alert.alert(
+                    "Attenzione",
+                    "Vuoi davvero eliminare tutte le foto?",
+                    [
+                      {
+                        text: "No",
+                        style: "cancel"
+                      },
+                      { text: "Sì", style:"destructive", onPress: () => delPhotos() }
+                    ]
+                  )
             }}
             >
                 <Text style={styles.danger}>Elimina tutte le foto</Text>
@@ -64,15 +69,33 @@ const SettingTiles = () => {
             <View style={styles.separator}></View>
 
             <Pressable style={({ pressed }) => [{ backgroundColor: pressed ? 'gray' : 'white' }, styles.settingTile ]} onPress={() => {
-                delPhotos()
-                delUser()
+                Alert.alert(
+                    "Attenzione",
+                    "Uscendo eliminerai tutti i dati presenti. Sei sicuro di voler procedere?",
+                    [
+                      {
+                        text: "No",
+                        style: "cancel"
+                      },
+                      { text: "Sì", style:"destructive", onPress: () => delUser() }
+                    ]
+                  )
             }}
             >
                 <Text style={styles.danger}>Esci</Text>
             </Pressable>
         </View>
+
+            <View style={styles.version}><Text>Versione 0.1.0</Text></View>
+
+            </ScrollView>
+        
+        </View>
     )
 }
+
+export default Settings
+
 
 const styles = StyleSheet.create({
     container: {

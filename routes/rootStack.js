@@ -19,8 +19,8 @@ function RootStack() {
                 <rootStack.Screen name='SecondaryStack' component={ SecondaryStack } />
                 <rootStack.Screen name='FirstAccess' component={ FirstAccess } />
                 <rootStack.Screen name='Subscription' component={ SubscriptionForm } />
-                <rootStack.Screen name="CameraModule" component={CameraModule} initialParams={{ user: '' }} />
-                <rootStack.Screen name="PhotoPreview" component={PhotoPreview} initialParams={{ user: '' }} />
+                <rootStack.Screen name="CameraModule" component={CameraModule} />
+                <rootStack.Screen name="PhotoPreview" component={PhotoPreview} />
             </rootStack.Navigator>
         </NavigationContainer>
     );

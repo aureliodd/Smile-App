@@ -1,20 +1,40 @@
-import React, { useState } from 'react';
-import { StyleSheet, Text, View , TextInput, Pressable } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, Text, View , TextInput, Pressable, Alert } from 'react-native';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
-const SubscriptionForm = ({navigation}) => {
+const ChangeName = ({navigation}) => {
 
     const [firstName, setFirstName] = useState('')
     const [secondName, setSecondName] = useState('')
+
+
+    useEffect(() => {
+      const page = navigation.addListener('focus', () => {
+        getData()
+      });
+      return page
+    }, []);
+
+
+
+    const getData = async () => {
+      try {
+        let fName = await AsyncStorage.getItem('firstName')
+        let sName = await AsyncStorage.getItem('secondName')
+        setFirstName(fName)
+        setSecondName(sName)
+      } catch(e) {
+        console.log(e)
+        Alert.alert("C'è stato un problema")
+      }
+    }
 
     const setData = async (firstName, secondName) => {
       try {
         await AsyncStorage.setItem('firstName',firstName)
         await AsyncStorage.setItem('secondName',secondName)
-        await AsyncStorage.setItem('firstAccess','false')
-        await AsyncStorage.setItem('firstAccessPhoto','true')
       } catch(e) {
         console.log(e)
         Alert.alert("C'è stato un problema")
@@ -23,7 +43,6 @@ const SubscriptionForm = ({navigation}) => {
 
     return(
         <View style={ styles.container }>
-          <View style={ styles.textView }><Text style={ styles.registerText }>Registrazione</Text></View>
           <TextInput autoCorrect={ false } style={styles.textInput} value={firstName} placeholder="nome" onChangeText={(value) => setFirstName(value)} />
           <TextInput autoCorrect={ false } style={styles.textInput} value={secondName} placeholder="cognome" onChangeText={(value) => setSecondName(value)} />
           
@@ -33,15 +52,15 @@ const SubscriptionForm = ({navigation}) => {
                 if(firstName === '' || secondName === '') return
                 
                 setData(firstName, secondName)
-                navigation.navigate('MainStack')
+                navigation.pop()
           }}>
-              <Text style={styles.text}>Iscriviti e accedi all'app</Text>
+              <Text style={styles.text}>Fatto</Text>
           </Pressable>
         </View>
     )
 }
 
-export default SubscriptionForm
+export default ChangeName
 
 
 const styles = StyleSheet.create({
@@ -49,9 +68,8 @@ const styles = StyleSheet.create({
   container: {
     height: '100%',
     display: 'flex',
-    backgroundColor: '#d7f8ff',
     alignItems: 'center',
-    justifyContent: 'center',
+    top: 20
   },
 
   textView:{
@@ -59,13 +77,9 @@ const styles = StyleSheet.create({
     marginBottom: 7,
     paddingLeft: 5
   },
-
-  registerText:{
-    fontSize: 30,
-  },
   
   text: {
-    fontSize: 16
+    fontSize: 16,
   },
   
   button: {
@@ -91,7 +105,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 8,
     width: '90%',
-    color: 'gray',
+    color: 'black',
     paddingLeft: 15,
     backgroundColor: 'white'
   }

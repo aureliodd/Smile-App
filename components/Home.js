@@ -7,7 +7,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Home = ({route, navigation}) => {
 
-  const [firstAccess, setFirstAccess] = useState(true)
   const [photos, setPhotos] = useState(null)
 
   const getFA = async () => {
@@ -25,6 +24,8 @@ const Home = ({route, navigation}) => {
       const value = jsonValue != null ? JSON.parse(jsonValue) : null;
       if(value)
         setPhotos(value)
+      else
+        setPhotos(null)
     } catch(e) {
       console.log('error: ',e)
       Alert.alert("C'è stato un problema")
@@ -39,13 +40,12 @@ const Home = ({route, navigation}) => {
     useEffect(() => {
       const page = navigation.addListener('focus', () => {
         getData()
-        // delData()
       });
       return page
     }, []);
 
     getFA().then((firstAccess) => {
-      if(!firstAccess) {displayFirstAccess()}
+      if(!firstAccess) { displayFirstAccess() }
     })
 
   if(photos === null)
@@ -178,7 +178,7 @@ const styles = StyleSheet.create({
         paddingTop: 5,
         paddingBottom: 5,
         padding: 2,
-        backgroundColor: 'rgba(255, 255, 255, 0.9)',
+        backgroundColor: 'rgba(255, 255, 255, 0.6)',
         position:'absolute', 
         bottom:0,
         maxHeight:100

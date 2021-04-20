@@ -4,6 +4,8 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import Home from '../components/Home'
 import Details from '../components/Details'
 import Settings from '../components/Settings'
+import ChangeName from '../components/settingsMenus/PersonalData'
+import Info from '../components/settingsMenus/Info'
 
 import Ionicons from '@expo/vector-icons/Ionicons'
 
@@ -21,12 +23,11 @@ const homeStackScreen = () => (
         name="Home"
         component={Home}
         options={{ title: 'Home' }}
-        initialParams={{ user: 'bello' }}
         />
         <homeStack.Screen
         name="Details"
         component={Details}
-        initialParams={{ user: 'bello' }}
+        options={{ title: 'Dettagli' }}
         />
     </homeStack.Navigator>
 )
@@ -41,16 +42,20 @@ const settingsStackScreen = () => (
         component={ Settings }
         options={{ title: 'Impostazioni' }}
         />
+
+        <settingsStack.Screen
+        name="ChangeName"
+        component={ ChangeName }
+        options={{ title: 'Dati personali' }}
+        />
+
+        <settingsStack.Screen
+        name="Info"
+        component={ Info }
+        options={{ title: 'Info' }}
+        />
     </settingsStack.Navigator>
 )
-
-const MyTheme = {
-    colors: {
-      primary: 'blue',
-      card: "#d7f8ff",
-      text: 'blue'
-    },
-  };
 
 function MainStack() {
     return (
