@@ -9,7 +9,7 @@ const secondaryStack = createStackNavigator()
 function SecondaryStack() {
     return (
       <secondaryStack.Navigator screenOptions={{ gestureEnabled: false }} >
-        <secondaryStack.Screen name='PhotoForm' component={ PhotoForm } options={{ title: 'Inviaa' }} />
+        <secondaryStack.Screen name='PhotoForm' component={ PhotoForm } options={{ title: 'Invia' }} />
       </secondaryStack.Navigator>
     );
   }

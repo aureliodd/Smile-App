@@ -1,18 +1,19 @@
 import { disableExpoCliLogging } from 'expo/build/logs/Logs';
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View , Alert, TouchableOpacity, StatusBar} from 'react-native';
+import { StyleSheet, Text, View, Alert, TouchableOpacity, StatusBar } from 'react-native';
 import { Camera } from 'expo-camera';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Ionicons from '@expo/vector-icons/Ionicons'
 
-const CameraModule = ({navigation}) => {
-    const [hasPermission, setHasPermission] = useState(null)
-    const [type, setType] = useState(Camera.Constants.Type.back)
-    const [flashMode, setFlashMode] = React.useState('off')
-    const [flashIcon, setFLashIcon] = React.useState('flash-off-outline')
+const CameraModule = ({ navigation }) => {
 
-    let camera
+  const [hasPermission, setHasPermission] = useState(null)
+  const [type, setType] = useState(Camera.Constants.Type.back)
+  const [flashMode, setFlashMode] = React.useState('off')
+  const [flashIcon, setFLashIcon] = React.useState('flash-off-outline')
+
+  let camera
 
   useEffect(() => {
     (async () => {
@@ -31,29 +32,30 @@ const CameraModule = ({navigation}) => {
   const takePicture = async () => {
 
     if (camera) {
-        const options = {
-          quality: 1,
-          fixOrientation: true,
-          forceUpOrientation: true
-        };
+      const options = {
+        quality: 1,
+        fixOrientation: true,
+        forceUpOrientation: true,
+      };
 
-        const photo = await camera.takePictureAsync(options)
-        //console.log(photo)
+      const photo = await camera.takePictureAsync(options)
+      console.log(new Date().toISOString())
+      console.log(new Date().toString())
 
-        navigation.navigate('PhotoPreview', {uri: photo.uri, date: new Date().toISOString()})
+      navigation.navigate('PhotoPreview', { uri: photo.uri, date: new Date().toISOString() })
     }
   }
 
   const handleFlash = () => {
-    if (flashMode === 'on'){
+    if (flashMode === 'on') {
       setFlashMode('auto')
       setFLashIcon('flash')
     }
-    else if (flashMode === 'off'){
+    else if (flashMode === 'off') {
       setFlashMode('on')
       setFLashIcon('flash-outline')
     }
-    else{
+    else {
       setFlashMode('off')
       setFLashIcon('flash-off-outline')
     }
@@ -62,48 +64,49 @@ const CameraModule = ({navigation}) => {
   const checkCameraFirstAccess = async () => {
     try {
       const firstAccessPhoto = await AsyncStorage.getItem('firstAccessPhoto')
-      if(firstAccessPhoto == 'true')
+      if (firstAccessPhoto == 'true')
         Alert.alert(
           "Nota",
           "Assicurarsi che la foto sia scattata nelle migliori condizioni possibili ",
           [
             {
               text: "Ho capito",
-              onPress: () => AsyncStorage.setItem('firstAccessPhoto','false'),
+              onPress: () => AsyncStorage.setItem('firstAccessPhoto', 'false'),
               style: "cancel"
             }
           ]
         )
-    } catch(e) {
-      console.log('error: ',e)
+    } catch (e) {
+      console.log('error: ', e)
       Alert.alert("C'è stato un problema")
     }
   }
 
   checkCameraFirstAccess()
 
-  
+
 
   return (
     <View style={styles.container}>
       <StatusBar hidden={true} />
-      <Camera style={styles.camera} type={type} flashMode={flashMode} ref={ref => {camera = ref}}>{/*NOTA: ref è importantissimo per far funzionare takePicture*/}
+      <Camera style={styles.camera} type={type} flashMode={flashMode} ref={ref => { camera = ref }}>{/*NOTA: ref è importantissimo per far funzionare takePicture*/}
         <View style={styles.buttonTopContainer}>
-        <TouchableOpacity
+          <TouchableOpacity
             style={styles.button}
-            onPress={ handleFlash }
-        >
-            <Ionicons name={ flashIcon } size={32} color='white' />
+            onPress={handleFlash}
+          >
+            <Ionicons name={flashIcon} size={32} color='white' />
           </TouchableOpacity>
-        <TouchableOpacity
+          <TouchableOpacity
             style={styles.button}
-            onPress={() => { navigation.pop()
+            onPress={() => {
+              navigation.pop()
             }}>
             <Ionicons name='close-outline' size={32} color='white' />
           </TouchableOpacity>
         </View>
         <View style={styles.buttonBottomContainer}>
-          <TouchableOpacity style={styles.button} onPress={() => {}}>
+          <TouchableOpacity style={styles.button} onPress={() => { }}>
             <Ionicons name='images-outline' size={32} color='white' />
           </TouchableOpacity>
           <TouchableOpacity style={styles.photoButton} onPress={takePicture}>
@@ -127,54 +130,54 @@ export default CameraModule
 
 
 const styles = StyleSheet.create({
-    
-    container: {
-        position:"absolute",
-        width: "100%",
-        height: "100%",
-      },
 
-      buttonTopContainer: {
-        position: 'absolute',
-        display: 'flex',
-        top:0,
-        backgroundColor: 'transparent',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        flexDirection: 'row',
-        width: '100%',
-        padding: 20
-      },
+  container: {
+    position: "absolute",
+    width: "100%",
+    height: "100%",
+  },
 
-      buttonBottomContainer: {
-        position: 'absolute',
-        display: 'flex',
-        bottom:0,
-        backgroundColor: 'transparent',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        flexDirection: 'row',
-        width: '100%',
-        padding: 20
-      },
+  buttonTopContainer: {
+    position: 'absolute',
+    display: 'flex',
+    top: 0,
+    backgroundColor: 'transparent',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    flexDirection: 'row',
+    width: '100%',
+    padding: 20
+  },
 
-      camera: {
-        flex: 1,
-      },
+  buttonBottomContainer: {
+    position: 'absolute',
+    display: 'flex',
+    bottom: 0,
+    backgroundColor: 'transparent',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    flexDirection: 'row',
+    width: '100%',
+    padding: 20
+  },
 
-      button: {
-        alignSelf: 'flex-end',
-      },
+  camera: {
+    flex: 1,
+  },
 
-        photoButton: {
-            height: 55,
-            width: 55,
-            borderRadius: 100,
-            backgroundColor: 'white'
-        },
+  button: {
+    alignSelf: 'flex-end',
+  },
 
-      text: {
-        fontSize: 18,
-        color: 'white',
-      },
-  });
+  photoButton: {
+    height: 55,
+    width: 55,
+    borderRadius: 100,
+    backgroundColor: 'white'
+  },
+
+  text: {
+    fontSize: 18,
+    color: 'white',
+  },
+});

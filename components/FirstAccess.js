@@ -8,7 +8,7 @@ const FirstAccess = ({navigation}) => {
     const messages = [
         {title: "Ciao!", content: "Benvenuto su APPLICAZIONE."},
         {title: "APPLICAZIONE è la nuovissima app per FARE QUALCOSA", content: "Non ti basterà fare altro che premere su scatta foto."},
-        {title: "Prima di cominciare", content: "Abbiamo bisogno che tu ti registri"}
+        {title: "Prima di cominciare", content: "Abbiamo bisogno che tu inserisca i tuoi dati personali.\n\nSe vuoi, puoi anche includere un recapito per sfruttare al massimo l'applicazione e contattare un centro medico."}
     ]
 
     let tabs = []
