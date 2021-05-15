@@ -39,10 +39,8 @@ const CameraModule = ({ navigation }) => {
       };
 
       const photo = await camera.takePictureAsync(options)
-      console.log(new Date().toISOString())
-      console.log(new Date().toString())
 
-      navigation.navigate('PhotoPreview', { uri: photo.uri, date: new Date().toISOString() })
+      navigation.navigate('PhotoPreview', { uri: photo.uri, date: new Date().toLocaleString() })
     }
   }
 
@@ -107,7 +105,7 @@ const CameraModule = ({ navigation }) => {
         </View>
         <View style={styles.buttonBottomContainer}>
           <TouchableOpacity style={styles.button} onPress={() => { }}>
-            <Ionicons name='images-outline' size={32} color='white' />
+            <Ionicons name='images-outline' size={32} color='rgba(0,0,0,0)' />{/* Da rendere visibile se implementato */}
           </TouchableOpacity>
           <TouchableOpacity style={styles.photoButton} onPress={takePicture}>
           </TouchableOpacity>

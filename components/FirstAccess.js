@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View ,Image, Button } from 'react-native';
+import { StyleSheet, Text, View, Button } from 'react-native';
 
 
 const FirstAccess = ({navigation}) => {
 
 
     const messages = [
-        {title: "Ciao!", content: "Benvenuto su APPLICAZIONE."},
-        {title: "APPLICAZIONE è la nuovissima app per FARE QUALCOSA", content: "Non ti basterà fare altro che premere su scatta foto."},
+        {title: "Ciao!", content: "Benvenuto su Smile."},
+        {title: "Smile è un'applicazione in grado di rilevare una qualsiasi patologia orale semplicemente analizzando una foto.", content: "Non ti basterà fare altro che premere su scatta foto."},
         {title: "Prima di cominciare", content: "Abbiamo bisogno che tu inserisca i tuoi dati personali.\n\nSe vuoi, puoi anche includere un recapito per sfruttare al massimo l'applicazione e contattare un centro medico."}
     ]
 

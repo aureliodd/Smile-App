@@ -1,7 +1,18 @@
-export function PostData(photo,info) {
-console.log(photo, info)
+import { Image } from 'react-native'
 
-    const address = '' //indirizzo a cui inviare i dati
+export function PostData(photouri,info) {
+// console.log(photo, info)
+
+let photo = { uri: photouri}
+let formdata = new FormData();
+
+formdata.append({uri: photo.uri, name: 'image.jpg', type: 'image/jpeg'})
+
+console.log(formdata)
+
+//SERVE UN FILEPICKER??
+
+    const address = '127.0.0.1'
 
     if(address !== '')
         fetch(address, {
@@ -11,8 +22,9 @@ console.log(photo, info)
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({  
-                photo: photo,
-                info: info
+                // photo: photouri,
+                // info: info
+                formdata
             })
         })
     

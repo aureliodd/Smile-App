@@ -86,7 +86,10 @@ const Settings = ({ navigation }) => {
           </Pressable>
         </View>
 
-        <View style={styles.version}><Text>Versione 0.1.0</Text></View>
+        <View style={styles.version}>
+          <Text>Smile</Text>
+          <Text>Versione 0.2.0</Text>
+        </View>
 
       </ScrollView>
 

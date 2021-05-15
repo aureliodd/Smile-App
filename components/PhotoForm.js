@@ -1,29 +1,58 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, Image, ScrollView, TextInput, Pressable, Alert, StatusBar, Switch } from 'react-native';
+import { StyleSheet, Text, View, Image, ScrollView, TextInput, Pressable, Alert, StatusBar, Switch, ActivityIndicator} from 'react-native';
 import { PostData } from '../network/Http';
 
 import { analizePhoto } from '../application/analizePhoto'
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { createContext } from 'react';
+import Ionicons from '@expo/vector-icons/Ionicons'
+
+
+const setPhotos = async (photo, resultName, resultDescription, resultGravity, isEnabled, moreInfo) => {
+  photo.result = { resultName: resultName, resultDescription: resultDescription, resultGravity: resultGravity }
+  photo.sentToMedicalCenter = isEnabled
+
+  if (isEnabled)
+    photo.moreInfo = moreInfo
+
+  try {
+    let aux = []
+
+    const jsonGet = await AsyncStorage.getItem('photos')
+    if (jsonGet !== null)
+      aux = JSON.parse(jsonGet)
+
+    aux.push(photo)
+
+    const jsonValue = JSON.stringify(aux)
+    await AsyncStorage.setItem('photos', jsonValue)
+
+  } catch (e) {
+    Alert.alert("C'è stato un problema")
+    console.log('error: ', e)
+  }
+}
 
 
 const PhotoForm = ({ route, navigation }) => {
+  
+  const [loading, setLoading] = useState(false)
 
   const [resultName, setResultName] = useState('');
   const [resultDescription, setResultDescription] = useState('');
   const [resultGravity, setResultGravity] = useState('');
-  const [gravityColor, setGravityColor] = useState('')
+  const [gravityColor, setGravityColor] = useState('black')
 
   const [isEnabled, setIsEnabled] = useState(false);
   const [moreInfo, setMoreInfo] = useState('');
 
   useEffect(() => {
-    const page = navigation.addListener('focus', () => {
-      let result = analizePhoto(route.params.uri)
+    const page = navigation.addListener('focus', async () => {
+      let result = await analizePhoto(route.params.uri)
       setResultName(result.name)
       setResultDescription(result.description)
       setResultGravity(result.gravity)
+      setLoading(false)
 
       return page
     }, []);
@@ -38,62 +67,48 @@ const PhotoForm = ({ route, navigation }) => {
 
   return (
     <View style={styles.container}>
+      <View style={[styles.loading, {display: loading ? 'flex' : 'none'}]}>
+        <ActivityIndicator size="large" />
+      </View>
       <StatusBar hidden={false}></StatusBar>
       <ScrollView contentContainerStyle={styles.contentContainer} >
 
         <Image resizeMode='cover' style={styles.image} source={{ uri: route.params.uri }} />
-
+        
         <View style={styles.tile}>
           <Text style={styles.resultText}>Risultato:</Text>
           <View>
+            <ActivityIndicator size="large" style={{display: resultName ? 'none' : 'flex'}}/>
             <Text style={[{ color: gravityColor }, styles.resultText]}>{resultName}</Text>
             <Text style={styles.text}>{resultDescription}</Text>
           </View>
         </View>
+        
 
-        <Form isEnabled={isEnabled} setIsEnabled={setIsEnabled} moreInfo={moreInfo} setMoreInfo={setMoreInfo}/>
+          <View style={[styles.separator, {display: resultName ? 'flex' : 'none'} ]}></View>
+
+          <View style={[styles.wrapper, {display: resultName ? 'flex' : 'none'}]}>
+            <Form isEnabled={isEnabled} setIsEnabled={setIsEnabled} moreInfo={moreInfo} setMoreInfo={setMoreInfo}/>
+          </View>
+
 
         <View style={styles.blankTile}></View>
 
       </ScrollView>
 
       <View style={styles.bottomButtonView}>
-        <Pressable style={({ pressed }) => [{ backgroundColor: pressed ? 'rgb(210, 230, 255)' : '#6495ED' }, styles.bottomButton]} onPress={() => {
+        <Pressable style={({ pressed }) => [{ backgroundColor: pressed ? 'rgb(210, 230, 255)' : '#6495ED' }, styles.bottomButton]} onPress={ async () => {
+          if (resultName === '') return
+
+          setLoading(true)
+          await setPhotos(route.params,resultName, resultDescription, resultGravity, isEnabled, moreInfo)
 
           if (isEnabled)
-            PostData(route.params, moreInfo)
-
-          const setPhotos = async () => {
-            let photo = route.params
-            photo.result = { resultName: resultName, resultDescription: resultDescription, resultGravity: resultGravity }
-            photo.sentToMedicalCenter = isEnabled
-
-            if (isEnabled)
-              photo.moreInfo = moreInfo
-
-            try {
-              let aux = []
-
-              const jsonGet = await AsyncStorage.getItem('photos')
-              if (jsonGet !== null)
-                aux = JSON.parse(jsonGet)
-
-              aux.push(route.params)
-
-              const jsonValue = JSON.stringify(aux)
-              await AsyncStorage.setItem('photos', jsonValue)
-
-            } catch (e) {
-              Alert.alert("C'è stato un problema")
-              console.log('errore')
-            }
-          }
-
-          setPhotos()
+            await PostData(route.params.uri, moreInfo)
 
           navigation.navigate('Home', route.params)
         }}>
-          <Text style={styles.text}>Torna alla Home</Text>
+          <Text style={styles.text}>{isEnabled ? 'Invia e t' : 'T'}orna alla Home</Text>
         </Pressable>
       </View>
     </View>
@@ -124,8 +139,6 @@ function Form(props) {
 
   getPhoneEmail()
 
-  // console.log(phone, email)
-
   if (phone === '' && email === '')
     return (
       <View style={[styles.tile, styles.notAvailable]}>
@@ -136,7 +149,10 @@ function Form(props) {
     return (
       <View style={styles.tile}>
         <View style={styles.modal}>
-          <Text style={styles.text}>Invia al centro medico</Text>
+          <View style={styles.textIonicon}>
+            <Ionicons name='medical' size={24} color='red' />
+            <Text style={styles.text}>  Invia al centro medico</Text>
+          </View>
           <Switch
             trackColor={{ false: "#767577", true: "#32CD32" }}
             ios_backgroundColor="#3e3e3e"
@@ -199,7 +215,13 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'flex-start',
     width: '100%'
+  },
+
+  textIonicon: {
+    flexDirection:'row',
+    alignItems:'center'
   },
 
   resultText: {
@@ -233,4 +255,27 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     aspectRatio: 5 / 3
   },
+
+  separator: {
+    width:'95%',
+    marginTop: 10,
+    borderWidth: 1,
+    color: '#DCDCDC',
+    marginLeft: 7,
+    marginRight: 7
+  },
+
+  wrapper:{
+    width: '100%'
+  },
+
+  loading: {
+    flex:1,
+    position:'absolute',
+    backgroundColor: 'rgba(0,0,0,0.9)',
+    zIndex: 1,
+    width: '100%',
+    height: '100%',
+    justifyContent:'center'
+  }
 });

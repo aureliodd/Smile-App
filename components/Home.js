@@ -2,6 +2,7 @@ import { disableExpoCliLogging } from 'expo/build/logs/Logs';
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, Image, ScrollView, Pressable, Alert } from 'react-native';
 
+import Ionicons from '@expo/vector-icons/Ionicons'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
@@ -89,14 +90,14 @@ const Home = ({ route, navigation }) => {
 export default Home
 
 const Tile = (photo, key, navigation) => {
-  // console.log(photo.uri)
+
   let formattedDate = GetDate(photo.date)
   if (photo !== null)
     return (
       <Pressable key={key} style={({ pressed }) => [{ backgroundColor: pressed ? '#d9f7f7' : '#add8e6' }, styles.tile]} onPress={() => {
-        navigation.push('Details', photo)
+        navigation.push('Details', {photo: photo, key: key})
       }}>
-        <Text style={styles.textTile}>{formattedDate}</Text>
+        <Text style={styles.textTile}>{photo.sentToMedicalCenter ? <Ionicons name='medical' size={16} color='red' /> : ""} {formattedDate} </Text>
         <Image resizeMode='cover' style={styles.image} source={{ uri: photo.uri }} />
       </Pressable>
     )
@@ -106,15 +107,15 @@ const Tile = (photo, key, navigation) => {
 
 const GetDate = (dateTime) => {
 
-  currentDate = new Date().toISOString()
+  currentDate = new Date().toLocaleString()
 
-  let splitDateTime = dateTime.split('T')
+  let splitDateTime = dateTime.split(', ')
 
   //se la foto è stata scattata oggi, ritorno l'ora
-  if (splitDateTime[0] === currentDate.split('T')[0])
+  if (splitDateTime[0] === currentDate.split(', ')[0])
     return ("Oggi, " + splitDateTime[1].slice(0, 5))
 
-  let date = splitDateTime[0].split('-').reverse().join('.')
+  let date = splitDateTime[0].split('/').reverse().join('.')
   return date
 }
 

@@ -1,14 +1,19 @@
-export function analizePhoto(photoUri) {
-    
+export async function analizePhoto(photoUri) {
     //codice relativo all'analisi dell'immagine mancante. simulo l'analisi con la funzione mockAnalysis
-    let result = mockAnalysis()
+    let result = await mockAnalysis()
     return result
 }
 
-const mockAnalysis = () => {
+const mockAnalysis = async () => {
     let i = Math.floor(Math.random() * 9)
+    console.log('Simulo eventuale ritardo computazionale...')
+    await sleep(2000)
     return diseases[i]
 }
+
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
 
 const diseases = [
     {name: 'Tutto a posto!', description: 'Durante l\'analisi non è stato riscontrato alcun problema.', gravity: 0},

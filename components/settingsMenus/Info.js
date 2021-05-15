@@ -6,7 +6,7 @@ const Info = () => {
 
     return(
         <View style={ styles.container }>
-              <Text style={styles.headerText}>NOME APP</Text>
+              <Text style={styles.headerText}>Smile</Text>
               <Text style={styles.text}>Applicazione sviluppata da</Text>
               <Text style={styles.text}>Alfio Aurelio D'Urso</Text>
               <Text style={styles.bottomText}>Università degli studi di Catania</Text>

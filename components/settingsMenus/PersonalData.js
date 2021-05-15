@@ -41,8 +41,18 @@ const ChangeName = ({ navigation }) => {
     try {
       await AsyncStorage.setItem('firstName', firstName)
       await AsyncStorage.setItem('secondName', secondName)
-      await AsyncStorage.setItem('email', e)
-      await AsyncStorage.setItem('phone', p)
+
+      if(e != null)
+        await AsyncStorage.setItem('email', e)
+      else
+        await AsyncStorage.removeItem('email')
+
+      if(p != null)
+        await AsyncStorage.setItem('phone', p)
+      else
+        await AsyncStorage.removeItem('phone')
+
+
     } catch (e) {
       console.log(e)
       Alert.alert("C'è stato un problema")
