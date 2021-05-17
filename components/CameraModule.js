@@ -3,6 +3,8 @@ import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, Alert, TouchableOpacity, StatusBar } from 'react-native';
 import { Camera } from 'expo-camera';
 
+import * as ImagePicker from 'expo-image-picker';
+
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Ionicons from '@expo/vector-icons/Ionicons'
 
@@ -20,6 +22,16 @@ const CameraModule = ({ navigation }) => {
       const { status } = await Camera.requestPermissionsAsync();
       setHasPermission(status === 'granted');
     })();
+
+    (async () => {
+      if (Platform.OS !== 'web') {
+        const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+        if (status !== 'granted') {
+          alert('Non è possibile accedere alla libreria foto.');
+        }
+      }
+    })();
+
   }, []);
 
   if (hasPermission === null) {
@@ -28,6 +40,18 @@ const CameraModule = ({ navigation }) => {
   if (hasPermission === false) {
     return <Text>Non è possibile accedere alla camera</Text>;
   }
+
+  const pickImage = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    if(!result.cancelled)
+      navigation.navigate('PhotoPreview', { uri: result.uri, date: new Date().toLocaleString() })
+
+  };
 
   const takePicture = async () => {
 
@@ -104,8 +128,8 @@ const CameraModule = ({ navigation }) => {
           </TouchableOpacity>
         </View>
         <View style={styles.buttonBottomContainer}>
-          <TouchableOpacity style={styles.button} onPress={() => { }}>
-            <Ionicons name='images-outline' size={32} color='rgba(0,0,0,0)' />{/* Da rendere visibile se implementato */}
+          <TouchableOpacity style={styles.button} onPress={ pickImage }>
+            <Ionicons name='images-outline' size={32} color="white" />{/* Da rendere visibile se implementato */}
           </TouchableOpacity>
           <TouchableOpacity style={styles.photoButton} onPress={takePicture}>
           </TouchableOpacity>

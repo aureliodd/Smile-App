@@ -1,33 +1,36 @@
-import { Image } from 'react-native'
+import { Alert } from "react-native"
 
-export function PostData(photouri,info) {
-// console.log(photo, info)
+export async function PostData(photouri, photoResultName, photoGravity, info, phoneNumber, email) {
 
-let photo = { uri: photouri}
-let formdata = new FormData();
+    const address = 'https://smile-app-backend.herokuapp.com/photos'
 
-formdata.append({uri: photo.uri, name: 'image.jpg', type: 'image/jpeg'})
+    // let bodyData = new FormData();
+    // bodyData.append('photo', {
+    //     uri: Platform.OS === 'ios' ? photouri.replace('file://', '') : photouri,
+    //     name: 'photo.png',
+    //     filename: 'imageName.png',
+    //     type: 'image/png' });
 
-console.log(formdata)
-
-//SERVE UN FILEPICKER??
-
-    const address = '127.0.0.1'
-
-    if(address !== '')
-        fetch(address, {
-            method: 'POST',
-            headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({  
-                // photo: photouri,
-                // info: info
-                formdata
-            })
+    let response = await fetch(address, {
+        method: 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            // photo: photouri,
+            moreInfo: info,
+            resultName: photoResultName,
+            resultGravity: photoGravity,
+            phoneNumber: phoneNumber,
+            email: email,
         })
-    
-    else
-        console.error('settare un indirizzo, per favore')
+        // body: JSON.stringify(bodyData)
+    })
+
+    try{
+        return response.json()
+    } catch (e) {
+        Alert.alert('Qualcosa è andato storto.')
+    }
 }

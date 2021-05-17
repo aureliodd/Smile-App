@@ -46,6 +46,9 @@ const PhotoForm = ({ route, navigation }) => {
   const [isEnabled, setIsEnabled] = useState(false);
   const [moreInfo, setMoreInfo] = useState('');
 
+  const [phone, setPhone] = useState('');
+  const [email, setEmail] = useState('');
+
   useEffect(() => {
     const page = navigation.addListener('focus', async () => {
       let result = await analizePhoto(route.params.uri)
@@ -56,6 +59,24 @@ const PhotoForm = ({ route, navigation }) => {
 
       return page
     }, []);
+
+
+  const getPhoneEmail = async () => {
+    try {
+      const phone = await AsyncStorage.getItem('phone')
+      const email = await AsyncStorage.getItem('email')
+      if (phone !== null)
+        setPhone(phone)
+      if (email !== null)
+        setEmail(email)
+
+    } catch (e) {
+      console.log('error: ', e)
+      Alert.alert("C'è stato un problema")
+    }
+  }
+
+  getPhoneEmail()
 
     switch (resultGravity) {
       case 0: setGravityColor('green'); break;
@@ -88,7 +109,7 @@ const PhotoForm = ({ route, navigation }) => {
           <View style={[styles.separator, {display: resultName ? 'flex' : 'none'} ]}></View>
 
           <View style={[styles.wrapper, {display: resultName ? 'flex' : 'none'}]}>
-            <Form isEnabled={isEnabled} setIsEnabled={setIsEnabled} moreInfo={moreInfo} setMoreInfo={setMoreInfo}/>
+            <Form isEnabled={isEnabled} setIsEnabled={setIsEnabled} moreInfo={moreInfo} setMoreInfo={setMoreInfo} phone={phone} email={email} />
           </View>
 
 
@@ -101,12 +122,22 @@ const PhotoForm = ({ route, navigation }) => {
           if (resultName === '') return
 
           setLoading(true)
-          await setPhotos(route.params,resultName, resultDescription, resultGravity, isEnabled, moreInfo)
 
-          if (isEnabled)
-            await PostData(route.params.uri, moreInfo)
-
-          navigation.navigate('Home', route.params)
+          if (isEnabled){
+            let data = await PostData(route.params.uri, resultName, resultGravity, moreInfo, phone, email)
+            console.log(data)
+            if(data.result == 'success'){
+              await setPhotos(route.params,resultName, resultDescription, resultGravity, isEnabled, moreInfo)
+              navigation.navigate('Home', route.params)
+            } else {
+              await setPhotos(route.params,resultName, resultDescription, resultGravity, false, '')
+              Alert.alert("Non è stato possibile inviare i file al centro medico. Riprovare")
+              navigation.navigate('Home', route.params)
+            }
+          } else {
+            await setPhotos(route.params,resultName, resultDescription, resultGravity, isEnabled, moreInfo)
+            navigation.navigate('Home', route.params)
+          }
         }}>
           <Text style={styles.text}>{isEnabled ? 'Invia e t' : 'T'}orna alla Home</Text>
         </Pressable>
@@ -119,27 +150,8 @@ export default PhotoForm
 
 function Form(props) {
 
-  const [phone, setPhone] = useState('');
-  const [email, setEmail] = useState('');
 
-  const getPhoneEmail = async () => {
-    try {
-      const phone = await AsyncStorage.getItem('phone')
-      const email = await AsyncStorage.getItem('email')
-      if (phone !== null)
-        setPhone(phone)
-      if (email !== null)
-        setEmail(email)
-
-    } catch (e) {
-      console.log('error: ', e)
-      Alert.alert("C'è stato un problema")
-    }
-  }
-
-  getPhoneEmail()
-
-  if (phone === '' && email === '')
+  if (props.phone === '' && props.email === '')
     return (
       <View style={[styles.tile, styles.notAvailable]}>
         <Text>Vuoi saperne di più? Fornisci email o telefono nelle impostazioni per poter contattare il centro medico</Text>

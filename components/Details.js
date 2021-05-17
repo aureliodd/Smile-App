@@ -109,7 +109,15 @@ const Details = ({ route, navigation }) => {
 
           <View style={styles.separator}></View>
 
-          <Form uri={route.params.photo.uri} sent={route.params.photo.sentToMedicalCenter} info={route.params.photo.moreInfo} index={route.params.key} setLoading={setLoading} />
+          <Form
+            uri={route.params.photo.uri}
+            sent={route.params.photo.sentToMedicalCenter}
+            info={route.params.photo.moreInfo}
+            index={route.params.key}
+            setLoading={setLoading}
+            resultName={route.params.photo.result.resultName}
+            resultGravity={route.params.photo.result.resultGravity}
+          />
 
 
           <View style={styles.blankTile}></View>
@@ -180,16 +188,18 @@ function Form(props) {
         />
         <Pressable
           style={({ pressed }) => [{ backgroundColor: pressed ? 'rgb(210, 230, 255)' : '#6495ED' }, styles.button, { display: (isEnabled) ? 'flex' : 'none' }]}
-          onPress={() => {
-
+          onPress={ async () => {
             props.setLoading(true)
 
-            updatePhoto(props.index, moreInfo)
-
-            PostData(props.uri, moreInfo)
-            props.setLoading(false)
-
-            setSent(true)
+            let data = await PostData(props.uri, props.resultName, props.resultGravity, moreInfo, phone, email)
+            if(data.result == 'success'){
+              updatePhoto(props.index, moreInfo)
+              props.setLoading(false)
+              setSent(true)
+            } else {
+              props.setLoading(false)
+              Alert.alert( "Invio foto non riuscito", "Riprovare ", [{ text: "Ok"  }])
+            }
           }}>
           <Text style={styles.text}>Invia</Text>
         </Pressable>
