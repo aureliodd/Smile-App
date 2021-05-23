@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, Image, ScrollView, TextInput, Pressable, Alert, StatusBar, Switch, ActivityIndicator} from 'react-native';
 import { PostData } from '../network/Http';
 
-import { analizePhoto } from '../application/analizePhoto'
+import { analysePhoto } from '../application/analysePhoto'
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Ionicons from '@expo/vector-icons/Ionicons'
@@ -51,7 +51,7 @@ const PhotoForm = ({ route, navigation }) => {
 
   useEffect(() => {
     const page = navigation.addListener('focus', async () => {
-      let result = await analizePhoto(route.params.uri)
+      let result = await analysePhoto(route.params.uri)
       setResultName(result.name)
       setResultDescription(result.description)
       setResultGravity(result.gravity)

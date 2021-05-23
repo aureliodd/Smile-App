@@ -1,4 +1,4 @@
-export async function analizePhoto(photoUri) {
+export async function analysePhoto(photoUri) {
     //codice relativo all'analisi dell'immagine mancante. simulo l'analisi con la funzione mockAnalysis
     let result = await mockAnalysis()
     return result
